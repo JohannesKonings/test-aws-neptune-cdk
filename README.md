@@ -3,4 +3,4 @@ Test AWS Neptune with CDK
 
 ## commands
 
-`cdk init app --language javascript`
+`cdk init app --language typecript`
