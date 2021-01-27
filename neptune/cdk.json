@@ -1,5 +1,5 @@
 {
-  "app": "node bin/neptune.js",
+  "app": "npx ts-node --prefer-ts-exts bin/neptune.ts",
   "context": {
     "@aws-cdk/core:enableStackNameDuplicates": "true",
     "aws-cdk:enableDiffNoFail": "true",
