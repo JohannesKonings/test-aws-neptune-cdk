@@ -3,6 +3,8 @@ import * as appsync from "@aws-cdk/aws-appsync";
 import * as lambda from "@aws-cdk/aws-lambda";
 import * as ec2 from "@aws-cdk/aws-ec2";
 import * as neptune from "@aws-cdk/aws-neptune";
+import * as sagemaker from "@aws-cdk/aws-sagemaker";
+import * as iam from "@aws-cdk/aws-iam";
 export class NeptuneStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -60,6 +62,30 @@ export class NeptuneStack extends cdk.Stack {
 
     lambdaFn.addEnvironment("WRITER", writeAddress);
     lambdaFn.addEnvironment("READER", readAddress);
+
+    const role = new iam.Role(this, "NeptuneRole", {
+      assumedBy: new iam.ServicePrincipal("sagemaker"),
+    });
+
+    const policy = new iam.Policy(this, "NeptunePolicy", {
+      policyName: "NeptunePolicy",
+      statements: [
+        new iam.PolicyStatement({
+          actions: ["*"],
+          resources: ["*"],
+        }),
+      ],
+    });
+
+    const notebook = new sagemaker.CfnNotebookInstance(
+      this,
+      "NeptuneNotebook",
+      {
+        instanceType: "ml.t2.medium",
+        volumeSizeInGb: 5,
+        roleArn: role.roleArn,
+      }
+    );
 
     cdk.Tags.of(this).add("Name", "NeptuneStack");
   }
